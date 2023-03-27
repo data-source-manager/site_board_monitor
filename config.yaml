@@ -1,0 +1,22 @@
+name: board_monitor
+Mysql:
+  host: "124.221.92.125"
+  port: 33061
+  user: "root"
+  password: "hq_mysql"
+  db: "news"
+Log:
+  model: "dev"
+  level: "warn"
+  file_name: "./deal.log"
+  max_size: 200
+  max_age: 30
+  max_backups: 5
+Redis:
+  host: "124.221.92.125"
+  port: 63791
+  pwd: ""
+  db: 0
+  site_board_msg: "news:board:queue"
+  news_key: 'BasicSpider:start_urls'
+  error_board_key: 'news:board:error'
