@@ -6,15 +6,19 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
+	"site_board_monitor/config"
 )
 
 type (
 	Xredis interface {
 		Subscribe(key string)
+		PushBoardsByPipeline([]string, error)
 	}
 
 	redisOp struct {
-		rdb *redis.Client
+		rdb  *redis.Client
+		db   SiteBoard
+		conf config.RedisConfig
 	}
 
 	boardMsg struct {
@@ -24,7 +28,20 @@ type (
 )
 
 func NewReid() Xredis {
-	return &redisOp{rdb: Rdb}
+	return &redisOp{rdb: Rdb,
+		db: NewBoard()}
+}
+
+func (r *redisOp) PushBoardsByPipeline(alldata []string, err error) {
+	_, err = r.rdb.Pipelined(context.Background(), func(pipe redis.Pipeliner) error {
+		for _, v := range alldata {
+			pipe.LPush(context.Background(), r.conf.NewsKey, v)
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (r *redisOp) Subscribe(key string) {
@@ -35,7 +52,6 @@ func (r *redisOp) Subscribe(key string) {
 		zap.L().Error(fmt.Sprintf("redis 订阅 error:%s", err.Error()))
 		panic(err)
 	}
-	board := NewBoard()
 
 	ch := sub.Channel()
 	for msg := range ch {
@@ -46,7 +62,7 @@ func (r *redisOp) Subscribe(key string) {
 			continue
 		}
 		fmt.Println("更新板块状态：", m.SiteBoardUUID)
-		err = board.UpdateBoardByUUID(m.SiteBoardUUID, m.Msg)
+		err = r.db.UpdateBoardByUUID(m.SiteBoardUUID, m.Msg)
 		if err != nil {
 			zap.L().Error("")
 			return

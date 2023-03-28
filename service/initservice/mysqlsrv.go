@@ -2,6 +2,7 @@ package initservice
 
 import (
 	"errors"
+	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
 	"site_board_monitor/service/mysqlservice"
 )
@@ -12,7 +13,7 @@ var (
 )
 
 type (
-	Board interface {
+	SiteBoard interface {
 		// QuerySiteByUUID 查询站点信息
 		QuerySiteByUUID(siteUUID string) (mysqlservice.Site, error)
 		// QueryBoardByUUID 查询板块信息
@@ -24,16 +25,17 @@ type (
 		UpdateBoardByUUID(boardUUID, error string) error
 	}
 
-	board struct {
-		db *gorm.DB
+	Board struct {
+		db  *gorm.DB
+		rdb *redis.Client
 	}
 )
 
-func NewBoard() Board {
-	return &board{db: SqlService}
+func NewBoard() SiteBoard {
+	return &Board{db: SqlService, rdb: Rdb}
 }
 
-func (b *board) QuerySiteByUUID(siteUUID string) (mysqlservice.Site, error) {
+func (b *Board) QuerySiteByUUID(siteUUID string) (mysqlservice.Site, error) {
 	var site mysqlservice.Site
 	qRes := b.db.Where("site_uuid=?", siteUUID).Find(&site)
 	if qRes.Error != nil {
@@ -46,7 +48,7 @@ func (b *board) QuerySiteByUUID(siteUUID string) (mysqlservice.Site, error) {
 	return site, nil
 }
 
-func (b *board) QueryBoardByUUID(boardUUID string) (mysqlservice.SiteBoard, error) {
+func (b *Board) QueryBoardByUUID(boardUUID string) (mysqlservice.SiteBoard, error) {
 	var siteBoard mysqlservice.SiteBoard
 	qRes := b.db.Where("board_uuid=?", boardUUID).Find(&siteBoard)
 	if qRes.Error != nil {
@@ -60,7 +62,7 @@ func (b *board) QueryBoardByUUID(boardUUID string) (mysqlservice.SiteBoard, erro
 
 }
 
-func (b *board) QueryBoardBySiteUUID(siteUUID string) ([]mysqlservice.SiteBoard, error) {
+func (b *Board) QueryBoardBySiteUUID(siteUUID string) ([]mysqlservice.SiteBoard, error) {
 	var boards []mysqlservice.SiteBoard
 	qRes := b.db.Where("site_uuid=?", siteUUID).Find(&boards)
 	if qRes.Error != nil {
@@ -73,7 +75,7 @@ func (b *board) QueryBoardBySiteUUID(siteUUID string) ([]mysqlservice.SiteBoard,
 	return boards, nil
 }
 
-func (b *board) QueryAllSite() ([]mysqlservice.Site, error) {
+func (b *Board) QueryAllSite() ([]mysqlservice.Site, error) {
 	var sites []mysqlservice.Site
 	qRes := b.db.Find(&sites)
 	if qRes.Error != nil {
@@ -86,7 +88,7 @@ func (b *board) QueryAllSite() ([]mysqlservice.Site, error) {
 	return sites, nil
 }
 
-func (b *board) QueryAlLBoard() ([]mysqlservice.SiteBoard, error) {
+func (b *Board) QueryAlLBoard() ([]mysqlservice.SiteBoard, error) {
 	var boards []mysqlservice.SiteBoard
 	qRes := b.db.Find(&boards)
 	if qRes.Error != nil {
@@ -99,7 +101,7 @@ func (b *board) QueryAlLBoard() ([]mysqlservice.SiteBoard, error) {
 	return boards, nil
 }
 
-func (b *board) UpdateBoardByUUID(boardUUID, errmsg string) error {
+func (b *Board) UpdateBoardByUUID(boardUUID, errmsg string) error {
 	var board mysqlservice.SiteBoard
 	board.BoardUuid = boardUUID
 	b.db.Model(&board).Where("board_uuid=?", boardUUID).Updates(map[string]interface{}{"error_msg": errmsg, "board_status": 0})
