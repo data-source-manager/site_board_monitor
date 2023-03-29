@@ -22,6 +22,7 @@ type (
 		QueryBoardBySiteUUID(siteUUID string) ([]mysqlservice.SiteBoard, error)
 		QueryAllSite() ([]mysqlservice.Site, error)
 		QueryAlLBoard() ([]mysqlservice.SiteBoard, error)
+		QueryPushBoard() []mysqlservice.PushSiteBoard
 		UpdateBoardByUUID(boardUUID, error string) error
 	}
 
@@ -107,3 +108,13 @@ func (b *Board) UpdateBoardByUUID(boardUUID, errmsg string) error {
 	b.db.Model(&board).Where("board_uuid=?", boardUUID).Updates(map[string]interface{}{"error_msg": errmsg, "board_status": 0})
 	return nil
 }
+
+func (b *Board) QueryPushBoard() []mysqlservice.PushSiteBoard {
+	var allPushBoardInfo []mysqlservice.PushSiteBoard
+
+	b.db.Raw("select site.app_id,site.country,site.site_name,site_board.board_uuid,site_board.board_name,site_board.board_theme,site_board.if_font_position,site_board.post_data,site_board.post_url,site_board.header from site_board ,site where site_board.site_uuid=site.site_uuid").Scan(&allPushBoardInfo)
+
+	return allPushBoardInfo
+}
+
+// 6251 8008 8196 5103

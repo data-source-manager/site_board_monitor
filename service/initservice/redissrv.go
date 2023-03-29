@@ -12,7 +12,7 @@ import (
 type (
 	Xredis interface {
 		Subscribe(key string)
-		PushBoardsByPipeline([]string, error)
+		PushBoardsByPipeline()
 	}
 
 	redisOp struct {
@@ -32,16 +32,24 @@ func NewReid() Xredis {
 		db: NewBoard()}
 }
 
-func (r *redisOp) PushBoardsByPipeline(alldata []string, err error) {
-	_, err = r.rdb.Pipelined(context.Background(), func(pipe redis.Pipeliner) error {
-		for _, v := range alldata {
-			pipe.LPush(context.Background(), r.conf.NewsKey, v)
-		}
-		return nil
-	})
-	if err != nil {
-		panic(err)
+func (r *redisOp) PushBoardsByPipeline() {
+	allData := r.db.QueryPushBoard()
+	pipe := r.rdb.Pipeline()
+	for _, v := range allData {
+		boardMap := make(map[string]interface{})
+		boardMap["meta"] = v
+		boardMap["url"] = v.BoardUrl
+		mapStr, _ := json.Marshal(boardMap)
+		pipe.LPush(context.Background(), r.conf.NewsKey, string(mapStr))
 	}
+	_, err := pipe.Exec(context.Background())
+	if err != nil {
+		fmt.Println(err.Error())
+		//panic(err)
+	} else {
+		fmt.Println("执行成功")
+	}
+
 }
 
 func (r *redisOp) Subscribe(key string) {

@@ -14,4 +14,8 @@ func main() {
 
 	initservice.InitService(initservice.Conf)
 
+	board := initservice.NewReid()
+	board.PushBoardsByPipeline()
+
+	board.Subscribe("news:board:error")
 }
