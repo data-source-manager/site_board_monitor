@@ -1,6 +1,6 @@
 name: board_monitor
 Mysql:
-  host: "124.221.92.125"
+  host: "xxxx"
   port: 33061
   user: "root"
   password: "hq_mysql"
@@ -13,7 +13,7 @@ Log:
   max_age: 30
   max_backups: 5
 Redis:
-  host: "124.221.92.125"
+  host: "xxx"
   port: 63791
   pwd: ""
   db: 0
