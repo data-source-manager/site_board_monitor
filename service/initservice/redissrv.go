@@ -29,9 +29,11 @@ type (
 
 func NewReid() Xredis {
 	return &redisOp{rdb: Rdb,
-		db: NewBoard()}
+		db:   NewBoard(),
+		conf: Conf.Redis}
 }
 
+// PushBoardsByPipeline 板块推送
 func (r *redisOp) PushBoardsByPipeline() {
 	allData := r.db.QueryPushBoard()
 	pipe := r.rdb.Pipeline()
@@ -52,8 +54,8 @@ func (r *redisOp) PushBoardsByPipeline() {
 
 }
 
+// Subscribe 更新板块的状态
 func (r *redisOp) Subscribe(key string) {
-	fmt.Println(key)
 	sub := r.rdb.Subscribe(context.Background(), key)
 	_, err := sub.Receive(context.Background())
 	if err != nil {

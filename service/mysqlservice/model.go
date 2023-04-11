@@ -43,16 +43,14 @@ func (Site) TableName() string {
 }
 
 type PushSiteBoard struct {
-	AppId          int64  `gorm:"column:app_id" db:"app_id" json:"app_id" form:"app_id"`
-	Country        string `gorm:"column:country" db:"country" json:"country" form:"country"`         //  国家
-	SiteName       string `gorm:"column:site_name" db:"site_name" json:"site_name" form:"site_name"` //  站点名
-	SiteUuid       string `gorm:"column:site_uuid" db:"site_uuid" json:"site_uuid" form:"site_uuid"`
-	BoardUuid      string `gorm:"column:board_uuid" db:"board_uuid" json:"board_uuid" form:"board_uuid"`                         //  站点板块id
-	BoardName      string `gorm:"column:board_name" db:"board_name" json:"board_name" form:"board_name"`                         //  站点中文名
-	BoardTheme     string `gorm:"column:board_theme" db:"board_theme" json:"board_theme" form:"board_theme"`                     //  板块主题
-	IfFontPosition int64  `gorm:"column:if_font_position" db:"if_font_position" json:"if_font_position" form:"if_font_position"` //  是否是头条新闻
-	PostUrl        string `gorm:"column:post_url" db:"post_url" json:"post_url" form:"post_url"`                                 //  post请求的url
-	PostData       string `gorm:"column:post_data" db:"post_data" json:"post_data" form:"post_data"`                             //  post请求data
-	Header         string `gorm:"column:header" db:"header" json:"header" form:"header"`                                         //  请求头
-	BoardUrl       string `gorm:"column:board_url" db:"board_url" json:"board_url" form:"board_url"`                             //  板块url
+	AppId     int64  `gorm:"column:app_id" db:"app_id" json:"appid" form:"appid"`
+	Country   string `gorm:"column:country" db:"country" json:"country" form:"country"`         //  国家
+	SiteName  string `gorm:"column:site_name" db:"site_name" json:"site_name" form:"site_name"` //  站点名
+	SiteUuid  string `gorm:"column:site_uuid" db:"site_uuid" json:"site_uuid" form:"site_uuid"`
+	BoardUuid string `gorm:"column:board_uuid" db:"board_uuid" json:"board_uuid" form:"board_uuid"` //  站点板块id
+	BoardName string `gorm:"column:board_name" db:"board_name" json:"board_name" form:"board_name"` //  站点中文名
+	PostUrl   string `gorm:"column:post_url" db:"post_url" json:"post_url" form:"post_url"`         //  post请求的url
+	PostData  string `gorm:"column:post_data" db:"post_data" json:"post_data" form:"post_data"`     //  post请求data
+	Header    string `gorm:"column:header" db:"header" json:"header" form:"header"`                 //  请求头
+	BoardUrl  string `gorm:"column:board_url" db:"board_url" json:"boardurl" form:"boardurl"`       //  板块url
 }

@@ -112,9 +112,7 @@ func (b *Board) UpdateBoardByUUID(boardUUID, errmsg string) error {
 func (b *Board) QueryPushBoard() []mysqlservice.PushSiteBoard {
 	var allPushBoardInfo []mysqlservice.PushSiteBoard
 
-	b.db.Raw("select site.app_id,site.country,site.site_name,site_board.board_uuid,site_board.board_name,site_board.board_theme,site_board.if_font_position,site_board.post_data,site_board.post_url,site_board.header from site_board ,site where site_board.site_uuid=site.site_uuid").Scan(&allPushBoardInfo)
+	b.db.Raw("select site.app_id,site.country,site.site_name,site_board.board_uuid,site_board.board_name,site_board.post_data,site_board.post_url,site_board.header,site_board.board_status,site_board.board_url from site_board ,site where site_board.site_uuid=site.site_uuid and board_status<>0").Scan(&allPushBoardInfo)
 
 	return allPushBoardInfo
 }
-
-// 6251 8008 8196 5103
