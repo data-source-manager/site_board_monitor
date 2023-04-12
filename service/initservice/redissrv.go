@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
+	"site_board_monitor/common"
 	"site_board_monitor/config"
 )
 
@@ -35,6 +36,7 @@ func NewReid() Xredis {
 
 // PushBoardsByPipeline 板块推送
 func (r *redisOp) PushBoardsByPipeline() {
+	fmt.Println("开始推送板块数据")
 	allData := r.db.QueryPushBoard()
 	pipe := r.rdb.Pipeline()
 	for _, v := range allData {
@@ -46,16 +48,15 @@ func (r *redisOp) PushBoardsByPipeline() {
 	}
 	_, err := pipe.Exec(context.Background())
 	if err != nil {
-		fmt.Println(err.Error())
-		//panic(err)
-	} else {
-		fmt.Println("执行成功")
+		zap.L().Error(fmt.Sprintf("板块推送失败,%s", err.Error()))
+		return
 	}
-
+	zap.L().Info(fmt.Sprintf("[%s] 一共推送了 %d 条数据", common.GetNowTimeStr(), len(allData)))
 }
 
 // Subscribe 更新板块的状态
 func (r *redisOp) Subscribe(key string) {
+	fmt.Println("订阅板块状态：" + key)
 	sub := r.rdb.Subscribe(context.Background(), key)
 	_, err := sub.Receive(context.Background())
 	if err != nil {

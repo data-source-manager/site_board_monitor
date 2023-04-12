@@ -1,19 +1,19 @@
 name: board_monitor
 Mysql:
-  host: "xxxx"
+  host: "124.221.92.125"
   port: 33061
   user: "root"
   password: "hq_mysql"
   db: "news"
 Log:
   model: "dev"
-  level: "warn"
+  level: "info"
   file_name: "./deal.log"
   max_size: 200
   max_age: 30
   max_backups: 5
 Redis:
-  host: "xxx"
+  host: "124.221.92.125"
   port: 63791
   pwd: ""
   db: 0
